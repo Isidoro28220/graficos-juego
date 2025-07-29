@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz de Álgebra con Nefra</title>
+  <style>
+    body { 
+      background: #fcf4e3; 
+      font-family: 'Segoe UI', Arial, sans-serif; 
+      margin: 0; 
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .top-buttons {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      display: flex;
+      gap: 14px;
+      z-index: 1000;
+    }
+    .top-btn {
+      background: #ffec8d;
+      border: 1px solid #b48f1e;
+      color: #665000;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 0.98em;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 1px 2px 8px #b48f1e33;
+      transition: background 0.18s, color 0.18s;
+    }
+    .top-btn:hover {
+      background: #ffe35a;
+      color: #ad7a02;
+    }
+    .quiz-container, .welcome-container, .bienvenida-container {
+      background: #fff8ec;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px #c8ad7f66;
+      padding: 32px 24px 24px 24px;
+      margin-top: 48px;
+      max-width: 400px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .nefra-img-big {
+      width: 240px;
+      height: 240px;
+      object-fit: contain;
+      margin-bottom: 12px;
+      border-radius: 50%;
+      border: 3px solid #ebd197;
+      background: #f5e6cc;
+      display: block;
+    }
+    .nefra-img-recta {
+      width: 100%;
+      max-width: 380px;
+      height: auto;
+      margin-bottom: 12px;
+      border: none;
+      border-radius: 0;
+      background: none;
+      display: block;
+    }
+    .fade {
+      animation: fadein 0.9s;
+    }
+    @keyframes fadein {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .bienvenida-txt {
+      margin-top: 10px;
+      color: #614500;
+      font-size: 1.15em;
+      font-weight: bold;
+    }
+    .algebra-txt {
+      margin-top: 10px;
+      color: #e2ad30;
+      font-size: 2.2em;
+      font-weight: bold;
+      text-shadow: 0 2px 14px #b99725, 0 0px 2px #fff9dc;
+      letter-spacing: 2px;
+      font-family: 'Segoe UI', 'Arial Black', Arial, sans-serif;
+      transition: opacity 0.4s;
+      min-height: 1.1em;
+    }
+    .bienvenida-img-box {
+      width: 100%;
+      max-width: 380px;
+      height: auto;
+      margin: 0 auto 12px auto;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    h2 {
+      color: #b4832e;
+      margin-bottom: 12px;
+    }
+    .question {
+      font-size: 1.15em;
+      color: #614500;
+      margin-bottom: 16px;
+    }
+    .options button {
+      background: #ffd466;
+      border: none;
+      border-radius: 8px;
+      margin: 8px 4px;
+      padding: 10px 22px;
+      font-size: 1em;
+      color: #614500;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .options button:hover {
+      background: #fff4d0;
+      color: #a8861c;
+    }
+    .feedback {
+      margin: 18px 0 0 0;
+      font-size: 1.12em;
+      color: #28b03c;
+      min-height: 32px;
+      font-weight: bold;
+    }
+    .final-message {
+      font-size: 1.25em;
+      color: #b4832e;
+      margin-top: 22px;
+    }
+    .start-btn, .retry-btn {
+      margin-top: 20px;
+      background: #ffd466;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 32px;
+      font-size: 1em;
+      cursor: pointer;
+      color: #614500;
+    }
+    .welcome-title {
+      color: #b4832e;
+      font-size: 1.35em;
+      margin-bottom: 12px;
+      font-weight: bold;
+    }
+    .welcome-msg {
+      color: #614500;
+      font-size: 1.12em;
+      margin-bottom: 24px;
+    }
+  </style>
+</head>
+<body>
+  <!-- BOTONES SUPERIORES FIJOS -->
+  <div class="top-buttons">
+    <button class="top-btn" id="btnSalir">Salir del juego</button>
+    <button class="top-btn" id="btnIrInicio">Ir al principio</button>
+  </div>
+
+  <!-- CONTENEDOR DE BIENVENIDA -->
+  <div class="welcome-container" id="welcome">
+    <img class="nefra-img-big" src="nefra-normal.png" alt="Nefra" style="width:120px; height:120px;" />
+    <div class="welcome-title">¡Bienvenido al Quiz de Álgebra con Nefra!</div>
+    <div class="welcome-msg">¿Estás preparado para descubrir los misterios del álgebra egipcia?<br>Haz clic para empezar.</div>
+    <button class="start-btn" id="startBtn">Empezar el juego</button>
+  </div>
+
+  <!-- CONTENEDOR DE BIENVENIDA VISUAL -->
+  <div class="bienvenida-container" id="bienvenida1" style="display:none">
+    <div class="bienvenida-img-box">
+      <img class="nefra-img-recta" id="imgBienvenida" src="nefra-bienvenida1.png" alt="Nefra bienvenida" />
+    </div>
+    <div class="bienvenida-txt" id="bienvenidaTxt">Nefra, la guardiana del Nilo</div>
+    <div class="algebra-txt" id="algebraTxt" style="display:none">Álgebra</div>
+  </div>
+
+  <!-- CONTENEDOR DEL QUIZ (oculto al inicio) -->
+  <div class="quiz-container" id="quiz" style="display:none">
+    <img class="nefra-img-big" id="nefraImg" src="nefra-quiz1.png" alt="Nefra" />
+    <h2>Quiz de Álgebra con Nefra</h2>
+    <div class="question" id="question"></div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="retry-btn" id="retryBtn" style="display:none">Repetir</button>
+  </div>
+
+  <!-- AUDIOS -->
+  <audio id="audioBienvenida" src="nefra-bienvenida.mp3"></audio>
+  <audio id="audioAplauso" src="aplauso.mp3"></audio>
+  <audio id="audioDisgusto" src="disgusto.mp3"></audio>
+
+  <script>
+    // -------- BOTONES SUPERIORES --------
+    document.getElementById("btnSalir").onclick = () => {
+      window.location.reload();
+    };
+
+    document.getElementById("btnIrInicio").onclick = () => {
+      document.getElementById("audioBienvenida").pause();
+      document.getElementById("audioAplauso").pause();
+      document.getElementById("audioDisgusto").pause();
+      document.getElementById("welcome").style.display = "block";
+      document.getElementById("bienvenida1").style.display = "none";
+      document.getElementById("quiz").style.display = "none";
+      document.getElementById("audioBienvenida").currentTime = 0;
+      current = 0;
+      score = 0;
+      document.getElementById("retryBtn").style.display = "none";
+    };
+
+    // -------- PREGUNTAS Y FEEDBACK --------
+    const preguntas = [
+      {
+        q: "Si en 1 montón más un ladrillo hay 7 ladrillos en total, ¿cuántos hay en el montón?",
+        img: "nefra-quiz1.png",
+        options: ["5", "6", "7", "8"],
+        answer: 1 // "6"
+      },
+      {
+        q: "Si saco 3 ladrillos de un montón y quedan 2, ¿cuántos ladrillos tenía el montón al principio?",
+        img: "nefra-quiz2.png",
+        options: ["4", "5", "6", "7"],
+        answer: 1 // "5"
+      },
+      {
+        q: "Si en 2 montones hay 10 ladrillos, ¿cuántos hay en cada montón?",
+        img: "nefra-quiz3.png",
+        options: ["4", "5", "6", "7"],
+        answer: 1 // "5"
+      },
+      {
+        q: "Repartiendo los ladrillos de 5 montones iguales entre 2 niños, doy 10 ladrillos a cada uno. ¿Cuántos había en cada montón?",
+        img: "nefra-quiz4.png",
+        options: ["3", "4", "5", "6"],
+        answer: 1 // "4"
+      }
+    ];
+
+    const nefraAplaude = "nefra-aplaude.png";
+    const nefraEnfadada = "nefra-enfadada.png";
+
+    let current = 0;
+    let score = 0;
+    let bienvenidaTimeouts = [];
+
+    document.getElementById("startBtn").onclick = function() {
+      document.getElementById("welcome").style.display = "none";
+      document.getElementById("bienvenida1").style.display = "flex";
+      const imgBienvenida = document.getElementById("imgBienvenida");
+      const bienvenidaTxt = document.getElementById("bienvenidaTxt");
+      const algebraTxt = document.getElementById("algebraTxt");
+      imgBienvenida.src = "nefra-bienvenida1.png";
+      imgBienvenida.className = "nefra-img-recta";
+      bienvenidaTxt.textContent = "Nefra, la guardiana del Nilo";
+      algebraTxt.style.display = "none";
+      const audio = document.getElementById("audioBienvenida");
+      audio.currentTime = 0;
+      audio.play();
+
+      // Limpiar timeouts previos si vuelves atrás
+      bienvenidaTimeouts.forEach(t => clearTimeout(t));
+      bienvenidaTimeouts = [];
+
+      // Imagen 2 (recta, fade)
+      bienvenidaTimeouts.push(setTimeout(function() {
+        imgBienvenida.src = "nefra-bienvenida2.png";
+        imgBienvenida.className = "nefra-img-recta fade";
+        bienvenidaTxt.textContent = "";
+        algebraTxt.style.display = "none";
+      }, 10000)); // 10 s
+
+      // Imagen 3 (recta, fade)
+      bienvenidaTimeouts.push(setTimeout(function() {
+        imgBienvenida.src = "nefra-bienvenida3.png";
+        imgBienvenida.className = "nefra-img-recta fade";
+        algebraTxt.style.display = "none";
+      }, 28000)); // 10+18=28 s
+
+      // Imagen 4 (recta, fade)
+      bienvenidaTimeouts.push(setTimeout(function() {
+        imgBienvenida.src = "nefra-bienvenida4.png";
+        imgBienvenida.className = "nefra-img-recta fade";
+        algebraTxt.style.display = "none";
+      }, 41000)); // 28+13=41 s
+
+      // Imagen 5 (recta, fade)
+      bienvenidaTimeouts.push(setTimeout(function() {
+        imgBienvenida.src = "nefra-bienvenida5.png";
+        imgBienvenida.className = "nefra-img-recta fade";
+        algebraTxt.style.display = "none";
+      }, 50000)); // 41+9=50 s
+
+      // Imagen 6 (recta, fade)
+      bienvenidaTimeouts.push(setTimeout(function() {
+        imgBienvenida.src = "nefra-bienvenida6.png";
+        imgBienvenida.className = "nefra-img-recta fade";
+        algebraTxt.style.display = "none";
+      }, 54000)); // 50+4=54 s
+
+      // Imagen 7 (recta, fade) + mostrar "Álgebra" debajo
+      bienvenidaTimeouts.push(setTimeout(function() {
+        imgBienvenida.src = "nefra-bienvenida7.png";
+        imgBienvenida.className = "nefra-img-recta fade";
+        algebraTxt.style.display = "block";
+      }, 74000)); // 74 s
+
+      // Quitar "Álgebra" antes de la última
+      bienvenidaTimeouts.push(setTimeout(function() {
+        algebraTxt.style.display = "none";
+      }, 83000)); // 83 s
+
+      // Imagen 8 (círculo, fade)
+      bienvenidaTimeouts.push(setTimeout(function() {
+        imgBienvenida.src = "nefra-bienvenida8.png";
+        imgBienvenida.className = "nefra-img-big fade";
+        algebraTxt.style.display = "none";
+      }, 83000)); // 83 s
+
+      // Final de la secuencia (83+10=93)
+      bienvenidaTimeouts.push(setTimeout(function() {
+        audio.pause();
+        document.getElementById("bienvenida1").style.display = "none";
+        document.getElementById("quiz").style.display = "block";
+        showQuestion();
+      }, 93000));
+    };
+
+    // -------- QUIZ --------
+    function showQuestion() {
+      const q = preguntas[current];
+      document.getElementById("nefraImg").src = q.img;
+      document.getElementById("question").textContent = q.q;
+      const optionsDiv = document.getElementById("options");
+      optionsDiv.innerHTML = "";
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement("button");
+        btn.textContent = opt;
+        btn.onclick = () => checkAnswer(i);
+        optionsDiv.appendChild(btn);
+      });
+      document.getElementById("feedback").textContent = "";
+    }
+
+    function checkAnswer(selected) {
+      const q = preguntas[current];
+      if (selected === q.answer) {
+        score++;
+        document.getElementById("feedback").textContent = "¡Muy bien! ✔";
+        document.getElementById("nefraImg").src = nefraAplaude;
+        const audioAplauso = document.getElementById("audioAplauso");
+        audioAplauso.currentTime = 0;
+        audioAplauso.play();
+        setTimeout(() => {
+          current++;
+          if (current < preguntas.length) {
+            showQuestion();
+          } else {
+            showFinal();
+          }
+        }, 1100);
+      } else {
+        document.getElementById("feedback").textContent = "¡Inténtalo de nuevo!";
+        document.getElementById("nefraImg").src = nefraEnfadada;
+        const audioDisgusto = document.getElementById("audioDisgusto");
+        audioDisgusto.currentTime = 0;
+        audioDisgusto.play();
+      }
+    }
+
+    function showFinal() {
+      document.getElementById("question").innerHTML = "";
+      document.getElementById("options").innerHTML = "";
+      document.getElementById("feedback").innerHTML =
+        `<span class="final-message">¡Felicidades! Has resuelto los misterios de Nefra.<br>Tu puntuación: ${score} de ${preguntas.length}.</span>`;
+      document.getElementById("retryBtn").style.display = "inline-block";
+      document.getElementById("nefraImg").src = nefraAplaude;
+      const audioAplauso = document.getElementById("audioAplauso");
+      audioAplauso.currentTime = 0;
+      audioAplauso.play();
+    }
+
+    document.getElementById("retryBtn").onclick = () => {
+      current = 0;
+      score = 0;
+      document.getElementById("retryBtn").style.display = "none";
+      showQuestion();
+    };
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
